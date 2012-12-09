@@ -80,7 +80,7 @@ def load():
         for x in range(-1,81):
             cell[x][y] = canvas.create_oval((x*10, y*10, x*10+10, y*10+10), outline=None, fill="black")
 
-def update():# need use w.itemconfig to change colour
+def update():
     global canvas
     for position in universe:
         if position.x in range(-1,61) and position.y in range(-1,81):
@@ -88,7 +88,7 @@ def update():# need use w.itemconfig to change colour
             canvas.itemconfig(cell[x][y], fill = "green")
         else:
             continue
-    for y in range(-1,61):# doesn't work "int has no attr fill"
+    for y in range(-1,61):
         for x in range(-1,81):
             if canvas.itemcget(cell[x][y],'fill') == "green" and (x,y) not in universe:
                 canvas.itemconfig(cell[x][y], fill = "black")

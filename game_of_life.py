@@ -1,7 +1,12 @@
-import Tkinter
+from Tkinter import *
 import csv
+from sys import argv
+
+script, filename = argv
+#filename = "blinker.csv"
 
 universe = set()
+cell = [[0 for row in range(-1,61)] for col in range(-1,81)]
 
 #####################################################################
 ###  Input Logic
@@ -11,7 +16,7 @@ def pattern_input(filename):
     with open(filename, 'rb') as csvfile:
         points = csv.reader(csvfile,delimiter=',')
         for row in points:
-            universe.add((row[0],row[1]))
+            universe.add((int(row[0]),int(row[1])))
 
 
 #####################################################################
@@ -69,43 +74,45 @@ def tick(universe):
 ####  Tkinter
 ####################################################################
 
-def run(universe):
-    universe = tick(universe)
-    update()
+def run(*ignore):
+    global universe
+    new_universe = tick(universe)
+    update(new_universe)
+    universe = new_universe
 
-   
+
 def load():
+    pattern_input(filename)
     global cell
     for y in range(-1,61):
         for x in range(-1,81):
             cell[x][y] = canvas.create_oval((x*10, y*10, x*10+10, y*10+10), outline=None, fill="black")
 
-def update():
+def update(universe):# need use w.itemconfig to change colour
     global canvas
     for position in universe:
-        if position.x in range(-1,61) and position.y in range(-1,81):
-            x,y = position.x,position.y
+        if position[0] in range(-1,61) and position[1] in range(-1,81):
+            x,y = position[0],position[1]
             canvas.itemconfig(cell[x][y], fill = "green")
         else:
             continue
-    for y in range(-1,61):
+    for y in range(-1,61):# doesn't work "int has no attr fill"
         for x in range(-1,81):
             if canvas.itemcget(cell[x][y],'fill') == "green" and (x,y) not in universe:
                 canvas.itemconfig(cell[x][y], fill = "black")
                 canvas.itemconfig(cell[x][y], outline = "black")
-    
+
 
 def main():
-    pattern_input(filename)
-    run()
-    root.after(50, main)
+    run(universe)
+    root.after(200, main)
 
 
 
-root = Tk()    
+root = Tk()
 canvas = Canvas(root, width=800, height=600,highlightthickness=0, bd=0, bg='black')
 canvas.pack()
 load()
-update()
+update(universe)
 main()
 root.mainloop()
